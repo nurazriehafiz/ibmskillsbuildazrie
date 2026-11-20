@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Pelan Strategik — KK Santubong 2026</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, "Segoe UI", system-ui, sans-serif; background: #f0f2f7; color: #1f2328; font-size: 13px; line-height: 1.5; }
+
+  /* HEADER */
+  .header { background: #2E3192; color: #fff; padding: 18px 32px; display: flex; justify-content: space-between; align-items: center; }
+  .header-left h1 { font-size: 20px; font-weight: 700; letter-spacing: 0.3px; }
+  .header-left p { font-size: 11px; opacity: 0.82; margin-top: 4px; }
+  .header-right { text-align: right; font-size: 11px; opacity: 0.82; }
+  .header-right .tahun { font-size: 26px; font-weight: 700; opacity: 1; color: #FFD700; }
+
+  /* SUBHEADER */
+  .subheader { background: #252882; color: #c8caff; font-size: 11px; padding: 7px 32px; display: flex; gap: 24px; flex-wrap: wrap; }
+  .subheader span { display: flex; align-items: center; gap: 5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; }
+  .dot-g { background: #00C48C; } .dot-y { background: #FFB800; } .dot-r { background: #FF5252; }
+
+  /* NAV TABS */
+  .nav { background: #fff; border-bottom: 2px solid #e5e7eb; padding: 0 32px; display: flex; gap: 0; }
+  .nav a { display: inline-block; padding: 12px 20px; font-size: 12px; font-weight: 600; color: #6B778C; text-decoration: none; border-bottom: 3px solid transparent; margin-bottom: -2px; cursor: pointer; }
+  .nav a.active { color: #2E3192; border-bottom-color: #2E3192; }
+  .nav a:hover { color: #2E3192; }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* MAIN */
+  .main { max-width: 1140px; margin: 0 auto; padding: 24px 20px 50px; }
+
+  /* SCORECARD ROW */
+  .scorecard-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+  .card { background: #fff; border-radius: 10px; padding: 18px 20px; border-top: 4px solid #2E3192; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+  .card .label { font-size: 11px; color: #6B778C; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .card .value { font-size: 32px; font-weight: 700; color: #2E3192; }
+  .card .sub { font-size: 11px; color: #6B778C; margin-top: 4px; }
+  .card.green { border-top-color: #00C48C; } .card.green .value { color: #00875A; }
+  .card.yellow { border-top-color: #FFB800; } .card.yellow .value { color: #FF8B00; }
+  .card.red { border-top-color: #FF5252; } .card.red .value { color: #DE350B; }
+
+  /* SECTION TITLE */
+  .section-title { font-size: 12px; font-weight: 700; color: #2E3192; margin: 22px 0 12px; padding-left: 10px; border-left: 4px solid #2E3192; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* GRID */
+  .two-col { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .two-col-eq { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+  /* BOXES */
+  .box { background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 1px 4px rgba(0,0,0,.07); }
+  .box h3 { font-size: 11px; font-weight: 700; color: #2E3192; margin-bottom: 14px; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  /* TABLE */
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th { background: #2E3192; color: #fff; padding: 9px 10px; text-align: left; font-weight: 600; font-size: 11px; }
+  td { padding: 9px 10px; border-bottom: 1px solid #e5e7eb; vertical-align: middle; }
+  tr:last-child td { border-bottom: none; }
+  tr:nth-child(even) td { background: #f7f8fa; }
+
+  /* BADGE */
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+  .badge-green { background: #E3FBF0; color: #00875A; }
+  .badge-yellow { background: #FFF4E0; color: #FF8B00; }
+  .badge-red { background: #FFE9E9; color: #DE350B; }
+  .badge-blue { background: #E8ECFF; color: #2E3192; }
+  .badge-gray { background: #f0f2f7; color: #6B778C; }
+
+  /* PROGRESS */
+  .prog-wrap { background: #e5e7eb; border-radius: 20px; height: 8px; overflow: hidden; margin-top: 4px; }
+  .prog-bar { height: 8px; border-radius: 20px; transition: width 0.6s ease; }
+  .prog-green { background: linear-gradient(90deg, #00C48C, #00875A); }
+  .prog-yellow { background: linear-gradient(90deg, #FFB800, #FF8B00); }
+  .prog-red { background: linear-gradient(90deg, #FF5252, #DE350B); }
+  .prog-blue { background: linear-gradient(90deg, #4A90D9, #2E3192); }
+
+  /* TERAS GRID */
+  .teras-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .teras-card { background: #f7f8fa; border-radius: 8px; padding: 12px 14px; border-left: 3px solid #2E3192; }
+  .teras-card.t2 { border-left-color: #4A90D9; }
+  .teras-card.t3 { border-left-color: #7c5cd8; }
+  .teras-card.t4 { border-left-color: #00C48C; }
+  .teras-card.t5 { border-left-color: #FFB800; }
+  .teras-card.t6 { border-left-color: #FF8B00; }
+  .teras-card.t7 { border-left-color: #FF5252; }
+  .teras-name { font-size: 10px; font-weight: 700; color: #57606a; margin-bottom: 5px; }
+  .teras-kpi { font-size: 12px; font-weight: 600; color: #1f2328; }
+
+  /* TIMELINE */
+  .timeline { list-style: none; }
+  .timeline li { display: flex; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f0f2f7; align-items: flex-start; }
+  .timeline li:last-child { border-bottom: none; }
+  .tl-dot { width: 12px; height: 12px; border-radius: 50%; margin-top: 2px; flex-shrink: 0; }
+  .tl-label strong { display: block; font-size: 12px; color: #1f2328; }
+  .tl-label span { color: #6B778C; font-size: 10px; }
+
+  /* BIG SCORE */
+  .big-score { text-align: center; padding: 20px 0; }
+  .big-score .num { font-size: 56px; font-weight: 700; color: #00875A; line-height: 1; }
+  .big-score .lbl { font-size: 12px; color: #6B778C; margin-top: 6px; }
+
+  /* BAR CHART */
+  .bar-chart-row { display: flex; align-items: flex-end; gap: 12px; height: 130px; padding: 0 8px; }
+  .bar-col { display: flex; flex-direction: column; align-items: center; flex: 1; }
+  .bar-val { font-size: 10px; color: #57606a; margin-bottom: 3px; font-weight: 600; }
+  .bar-rect { width: 36px; border-radius: 4px 4px 0 0; }
+  .bar-lbl { font-size: 10px; color: #6B778C; margin-top: 5px; font-weight: 600; }
+  .bar-sub { font-size: 9px; color: #aaa; }
+
+  /* ALERT BOX */
+  .alert { border-radius: 8px; padding: 12px 16px; margin-bottom: 10px; font-size: 12px; display: flex; gap: 10px; align-items: flex-start; }
+  .alert-red { background: #FFE9E9; border-left: 4px solid #DE350B; }
+  .alert-yellow { background: #FFF4E0; border-left: 4px solid #FFB800; }
+  .alert-green { background: #E3FBF0; border-left: 4px solid #00C48C; }
+  .alert-icon { font-size: 16px; flex-shrink: 0; }
+
+  /* KPI DETAIL PAGE */
+  .kpi-filter { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; }
+  .btn-filter { padding: 5px 14px; border-radius: 20px; border: 1.5px solid #e5e7eb; background: #fff; font-size: 11px; cursor: pointer; color: #57606a; font-weight: 600; }
+  .btn-filter.active { background: #2E3192; color: #fff; border-color: #2E3192; }
+
+  /* FOOTER */
+  .footer { background: #2E3192; color: rgba(255,255,255,0.7); font-size: 11px; text-align: center; padding: 16px 32px; margin-top: 0; }
+  .footer strong { color: #fff; }
+
+  /* PRINT */
+  @media print {
+    .nav { display: none; }
+    .page { display: block !important; page-break-after: always; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>🏛 DASHBOARD PELAN STRATEGIK POLYCC</h1>
+    <p>Kolej Komuniti Santubong &nbsp;|&nbsp; Jabatan Pendidikan Politeknik dan Kolej Komuniti (JPPKK) &nbsp;|&nbsp; Kementerian Pendidikan Tinggi</p>
+  </div>
+  <div class="header-right">
+    <div class="tahun">2026</div>
+    <div>Suku Ke-3 &nbsp;|&nbsp; Kemaskini: Sep 2026</div>
+    <div>Kategori 3 &nbsp;|&nbsp; 17 KPI Aktif</div>
+  </div>
+</div>
+
+<!-- SUBHEADER -->
+<div class="subheader">
+  <span><span class="dot dot-g"></span> Tercapai</span>
+  <span><span class="dot dot-y"></span> Dalam Proses / Perlu Perhatian</span>
+  <span><span class="dot dot-r"></span> Belum Mencapai / Kritikal</span>
+  <span style="margin-left:auto;opacity:0.7;">⚠ Data Dummy — Untuk Demonstrasi Sahaja &nbsp;|&nbsp; PERSYST 2.0: app.mypolycc.edu.my</span>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav">
+  <a class="active" onclick="showPage('ringkasan')">📊 Ringkasan</a>
+  <a onclick="showPage('kpi')">📋 Semua KPI</a>
+  <a onclick="showPage('teras')">🎯 Teras Strategik</a>
+  <a onclick="showPage('tindakan')">⚡ Tindakan Segera</a>
+  <a onclick="showPage('garis')">📅 Garis Masa</a>
+</div>
+
+<!-- ========== PAGE 1: RINGKASAN ========== -->
+<div id="page-ringkasan" class="page active">
+<div class="main">
+
+  <div class="scorecard-row">
+    <div class="card">
+      <div class="label">Jumlah KPI Aktif</div>
+      <div class="value">17</div>
+      <div class="sub">daripada 19 KPI POLYCC 2026</div>
+    </div>
+    <div class="card green">
+      <div class="label">🟢 KPI Tercapai</div>
+      <div class="value">9</div>
+      <div class="sub">53% &nbsp;—&nbsp; On Track</div>
+    </div>
+    <div class="card yellow">
+      <div class="label">🟡 Dalam Proses</div>
+      <div class="value">5</div>
+      <div class="sub">29% &nbsp;—&nbsp; Perlu Perhatian</div>
+    </div>
+    <div class="card red">
+      <div class="label">🔴 Belum Mencapai</div>
+      <div class="value">3</div>
+      <div class="sub">18% &nbsp;—&nbsp; Perlu Intervensi</div>
+    </div>
+  </div>
+
+  <div class="two-col">
+    <div class="box">
+      <h3>Jadual Ringkasan Semua KPI Aktif</h3>
+      <table>
+        <thead><tr><th>Kod</th><th>Pernyataan KPI</th><th>Sasaran</th><th>Semasa</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>KPI-01</td><td>Kebolehpasaran Graduan</td><td>95%</td><td>96.2%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+          <tr><td>KPI-02</td><td>Intervensi Kebolehpasaran</td><td>10%</td><td>12.4%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+          <tr><td>KPI-03</td><td>Projek Keusahawanan Pelajar</td><td>1</td><td>1</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+          <tr><td>KPI-04</td><td>Pelajar Berjaya Keb./Antarabangsa</td><td>4</td><td>2</td><td><span class="badge badge-yellow">⚠ Proses</span></td></tr>
+          <tr><td>KPI-05</td><td>Program Pembangunan Pelajar Holistik</td><td>6</td><td>5</td><td><span class="badge badge-yellow">⚠ Proses</span></td></tr>
+          <tr><td>KPI-06</td><td>Pengiktirafan Keb./Antarabangsa</td><td>1</td><td>1</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+          <tr><td>KPI-07</td><td>Program Kesejahteraan Mental &amp; Fizikal</td><td>4</td><td>4</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+          <tr><td>KPI-08</td><td>Skor Kualiti Data POLYCC</td><td>95%</td><td>91%</td><td><span class="badge badge-yellow">⚠ Proses</span></td></tr>
+          <tr><td>KPI-09</td><td>Pendaftaran Pelajar (Norma Ambilan)</td><td>90%</td><td>74%</td><td><span class="badge badge-red">✘ Kritikal</span></td></tr>
+          <tr><td>KPI-11</td><td>Prestasi Perbelanjaan Mengurus (B64)</td><td>99%</td><td>99%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+          <tr><td>KPI-12</td><td>Pembayaran Bil &amp; Tuntutan 7 Hari</td><td>95%</td><td>97%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+          <tr><td>KPI-13</td><td>Pensyarah Kemahiran Industri</td><td>50%</td><td>42%</td><td><span class="badge badge-red">✘ Kritikal</span></td></tr>
+          <tr><td>KPI-14</td><td>Bahan Digital Imersif &amp; AI</td><td>3</td><td>2</td><td><span class="badge badge-yellow">⚠ Proses</span></td></tr>
+          <tr><td>KPI-16</td><td>Skor Prestasi IOC</td><td>50%</td><td>39%</td><td><span class="badge badge-red">✘ Kritikal</span></td></tr>
+          <tr><td>KPI-17</td><td>Industri Kolaborasi Berimpak Tinggi</td><td>1</td><td>1</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+          <tr><td>KPI-18</td><td>Projek RDICE</td><td>1</td><td>1</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+          <tr><td>KPI-19</td><td>Modul Kursus PSH Berstruktur</td><td>1</td><td>1</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:16px;">
+      <div class="box">
+        <h3>Skor Berwajaran Keseluruhan</h3>
+        <div class="big-score">
+          <div class="num">72.4<span style="font-size:24px;">%</span></div>
+          <div class="lbl">Sasaran: 100% &nbsp;|&nbsp; Jurang: 27.6%</div>
+        </div>
+        <div class="prog-wrap"><div class="prog-bar prog-yellow" style="width:72.4%"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;color:#6B778C;margin-top:5px;"><span>0%</span><span>50%</span><span>100%</span></div>
+      </div>
+
+      <div class="box">
+        <h3>Trend Suku (% KPI Tercapai)</h3>
+        <div class="bar-chart-row">
+          <div class="bar-col">
+            <div class="bar-val">47%</div>
+            <div class="bar-rect" style="height:60px;background:#4A90D9;"></div>
+            <div class="bar-lbl">Q1</div><div class="bar-sub">Jan–Mac</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-val">53%</div>
+            <div class="bar-rect" style="height:68px;background:#4A90D9;"></div>
+            <div class="bar-lbl">Q2</div><div class="bar-sub">Apr–Jun</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-val" style="color:#2E3192;font-weight:700;">53%</div>
+            <div class="bar-rect" style="height:68px;background:#2E3192;"></div>
+            <div class="bar-lbl" style="color:#2E3192;">Q3 ◀</div><div class="bar-sub">Jul–Sep</div>
+          </div>
+          <div class="bar-col">
+            <div class="bar-val" style="color:#ccc;">—</div>
+            <div class="bar-rect" style="height:4px;background:#e5e7eb;"></div>
+            <div class="bar-lbl" style="color:#ccc;">Q4</div><div class="bar-sub" style="color:#ccc;">Okt–Dis</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ========== PAGE 2: SEMUA KPI ========== -->
+<div id="page-kpi" class="page">
+<div class="main">
+  <div class="section-title">Butiran 17 KPI Aktif — KK Santubong (Kategori 3)</div>
+  <div class="kpi-filter">
+    <button class="btn-filter active" onclick="filterKPI('semua',this)">Semua (17)</button>
+    <button class="btn-filter" onclick="filterKPI('tercapai',this)">🟢 Tercapai (9)</button>
+    <button class="btn-filter" onclick="filterKPI('proses',this)">🟡 Dalam Proses (5)</button>
+    <button class="btn-filter" onclick="filterKPI('kritikal',this)">🔴 Kritikal (3)</button>
+    <button class="btn-filter" onclick="filterKPI('tahunan',this)">📅 Tahunan</button>
+    <button class="btn-filter" onclick="filterKPI('sukuan',this)">🔄 Sukuan</button>
+  </div>
+  <div class="box">
+    <table id="kpi-table">
+      <thead><tr><th>Kod</th><th>Pernyataan KPI</th><th>Teras</th><th>Unit</th><th>Lap.</th><th>Sasaran</th><th>Semasa</th><th>Wajaran</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr data-status="tercapai" data-lap="tahunan"><td>KPI-01</td><td>Peratus kebolehpasaran graduan politeknik dan kolej komuniti</td><td>T1</td><td>%</td><td>Tahunan</td><td>95%</td><td>96.2%</td><td>7%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+        <tr data-status="tercapai" data-lap="sukuan"><td>KPI-02</td><td>Peratus pelajar tahun akhir menyertai program intervensi kebolehpasaran</td><td>T1</td><td>%</td><td>Sukuan</td><td>10%</td><td>12.4%</td><td>6%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+        <tr data-status="tercapai" data-lap="tahunan"><td>KPI-03</td><td>Bilangan projek keusahawanan pelajar berasaskan penyelesaian masalah komuniti</td><td>T1</td><td>Bil.</td><td>Tahunan</td><td>1</td><td>1</td><td>5%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+        <tr data-status="proses" data-lap="sukuan"><td>KPI-04</td><td>Bilangan pelajar yang berjaya ke peringkat kebangsaan atau antarabangsa</td><td>T1</td><td>Bil.</td><td>Sukuan</td><td>4</td><td>2</td><td>7%</td><td><span class="badge badge-yellow">⚠ Proses</span></td></tr>
+        <tr data-status="proses" data-lap="sukuan"><td>KPI-05</td><td>Bilangan program pembangunan pelajar berciri holistik</td><td>T1</td><td>Bil.</td><td>Sukuan</td><td>6</td><td>5</td><td>7%</td><td><span class="badge badge-yellow">⚠ Proses</span></td></tr>
+        <tr data-status="tercapai" data-lap="sukuan"><td>KPI-06</td><td>Bilangan pengiktirafan daripada badan/agensi kebangsaan atau antarabangsa</td><td>T2</td><td>Bil.</td><td>Sukuan</td><td>1</td><td>1</td><td>7%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+        <tr data-status="tercapai" data-lap="sukuan"><td>KPI-07</td><td>Bilangan program ke arah kesejahteraan mental dan fizikal warga POLYCC</td><td>T2</td><td>Bil.</td><td>Sukuan</td><td>4</td><td>4</td><td>7%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+        <tr data-status="proses" data-lap="tahunan"><td>KPI-08</td><td>Skor kualiti data POLYCC</td><td>T2</td><td>%</td><td>Tahunan</td><td>95%</td><td>91%</td><td>6%</td><td><span class="badge badge-yellow">⚠ Proses</span></td></tr>
+        <tr data-status="kritikal" data-lap="sukuan"><td>KPI-09</td><td>Peratus pelajar sepenuh masa mendaftar di kolej komuniti (norma ambilan)</td><td>T2</td><td>%</td><td>Sukuan</td><td>90%</td><td>74%</td><td>6%</td><td><span class="badge badge-red">✘ Kritikal</span></td></tr>
+        <tr data-status="tercapai" data-lap="tahunan"><td>KPI-11</td><td>Peratus prestasi perbelanjaan mengurus (B64)</td><td>T2</td><td>%</td><td>Tahunan</td><td>99%</td><td>99%</td><td>7%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+        <tr data-status="tercapai" data-lap="tahunan"><td>KPI-12</td><td>Peratus prestasi pengurusan pembayaran bil &amp; tuntutan dalam 7 hari</td><td>T2</td><td>%</td><td>Tahunan</td><td>95%</td><td>97%</td><td>7%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+        <tr data-status="kritikal" data-lap="tahunan"><td>KPI-13</td><td>Peratus pensyarah kursus teras bidang memiliki kemahiran industri</td><td>T3</td><td>%</td><td>Tahunan</td><td>50%</td><td>42%</td><td>6%</td><td><span class="badge badge-red">✘ Kritikal</span></td></tr>
+        <tr data-status="proses" data-lap="sukuan"><td>KPI-14</td><td>Bilangan bahan dan platform pembelajaran digital imersif &amp; AI</td><td>T4</td><td>Bil.</td><td>Sukuan</td><td>3</td><td>2</td><td>7%</td><td><span class="badge badge-yellow">⚠ Proses</span></td></tr>
+        <tr data-status="kritikal" data-lap="sukuan"><td>KPI-16</td><td>Skor prestasi pencapaian Industry on Campus (IOC)</td><td>T4</td><td>%</td><td>Sukuan</td><td>50%</td><td>39%</td><td>6%</td><td><span class="badge badge-red">✘ Kritikal</span></td></tr>
+        <tr data-status="tercapai" data-lap="tahunan"><td>KPI-17</td><td>Bilangan industri menghasilkan kolaborasi berimpak tinggi</td><td>T5</td><td>Bil.</td><td>Tahunan</td><td>1</td><td>1</td><td>7%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+        <tr data-status="tercapai" data-lap="tahunan"><td>KPI-18</td><td>Bilangan projek RDICE diaplikasikan kepada pemegang taruh</td><td>T6</td><td>Bil.</td><td>Tahunan</td><td>1</td><td>1</td><td>6%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+        <tr data-status="tercapai" data-lap="tahunan"><td>KPI-19</td><td>Bilangan modul kursus PSH berstruktur dibangunkan</td><td>T7</td><td>Bil.</td><td>Tahunan</td><td>1</td><td>1</td><td>7%</td><td><span class="badge badge-green">✔ Tercapai</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ========== PAGE 3: TERAS STRATEGIK ========== -->
+<div id="page-teras" class="page">
+<div class="main">
+  <div class="section-title">Pencapaian Mengikut 7 Teras Strategik PSPKK</div>
+  <div class="teras-grid" style="gap:14px;">
+
+    <div class="teras-card" style="padding:18px;">
+      <div class="teras-name">TERAS 1 — Menghasilkan Graduan TVET Berkualiti</div>
+      <div class="teras-kpi" style="font-size:13px;">4 / 5 KPI Tercapai &nbsp;<span class="badge badge-green" style="font-size:10px;">80%</span></div>
+      <div style="margin:8px 0 4px;font-size:11px;color:#6B778C;">KPI-01 ✔ &nbsp; KPI-02 ✔ &nbsp; KPI-03 ✔ &nbsp; KPI-04 ⚠ &nbsp; KPI-05 ⚠</div>
+      <div class="prog-wrap"><div class="prog-bar prog-green" style="width:80%"></div></div>
+    </div>
+
+    <div class="teras-card t2" style="padding:18px;">
+      <div class="teras-name">TERAS 2 — Memantapkan Governan yang Responsif dan Mampan</div>
+      <div class="teras-kpi" style="font-size:13px;">4 / 6 KPI Tercapai &nbsp;<span class="badge badge-yellow" style="font-size:10px;">67%</span></div>
+      <div style="margin:8px 0 4px;font-size:11px;color:#6B778C;">KPI-06 ✔ &nbsp; KPI-07 ✔ &nbsp; KPI-08 ⚠ &nbsp; KPI-09 ✘ &nbsp; KPI-11 ✔ &nbsp; KPI-12 ✔</div>
+      <div class="prog-wrap"><div class="prog-bar prog-yellow" style="width:67%"></div></div>
+    </div>
+
+    <div class="teras-card t3" style="padding:18px;">
+      <div class="teras-name">TERAS 3 — Pemerkasaan Bakat</div>
+      <div class="teras-kpi" style="font-size:13px;">0 / 1 KPI Tercapai &nbsp;<span class="badge badge-red" style="font-size:10px;">42%</span></div>
+      <div style="margin:8px 0 4px;font-size:11px;color:#6B778C;">KPI-13 ✘ (42% vs sasaran 50%)</div>
+      <div class="prog-wrap"><div class="prog-bar prog-red" style="width:42%"></div></div>
+    </div>
+
+    <div class="teras-card t4" style="padding:18px;">
+      <div class="teras-name">TERAS 4 — Pemantapan Program Pengajian</div>
+      <div class="teras-kpi" style="font-size:13px;">0 / 2 KPI Tercapai &nbsp;<span class="badge badge-red" style="font-size:10px;">47%</span></div>
+      <div style="margin:8px 0 4px;font-size:11px;color:#6B778C;">KPI-14 ⚠ &nbsp; KPI-16 ✘</div>
+      <div class="prog-wrap"><div class="prog-bar prog-red" style="width:47%"></div></div>
+    </div>
+
+    <div class="teras-card t5" style="padding:18px;">
+      <div class="teras-name">TERAS 5 — Memperkukuh Kolaborasi Industri, Komuniti dan Alumni</div>
+      <div class="teras-kpi" style="font-size:13px;">1 / 1 KPI Tercapai &nbsp;<span class="badge badge-green" style="font-size:10px;">100%</span></div>
+      <div style="margin:8px 0 4px;font-size:11px;color:#6B778C;">KPI-17 ✔</div>
+      <div class="prog-wrap"><div class="prog-bar prog-green" style="width:100%"></div></div>
+    </div>
+
+    <div class="teras-card t6" style="padding:18px;">
+      <div class="teras-name">TERAS 6 — Membudaya Penyelidikan dan Inovasi (RDICE)</div>
+      <div class="teras-kpi" style="font-size:13px;">1 / 1 KPI Tercapai &nbsp;<span class="badge badge-green" style="font-size:10px;">100%</span></div>
+      <div style="margin:8px 0 4px;font-size:11px;color:#6B778C;">KPI-18 ✔</div>
+      <div class="prog-wrap"><div class="prog-bar prog-green" style="width:100%"></div></div>
+    </div>
+
+    <div class="teras-card t7" style="padding:18px;grid-column:span 2;">
+      <div class="teras-name">TERAS 7 — Memperkukuh Pembelajaran Sepanjang Hayat (PSH)</div>
+      <div class="teras-kpi" style="font-size:13px;">1 / 1 KPI Tercapai &nbsp;<span class="badge badge-green" style="font-size:10px;">100%</span></div>
+      <div style="margin:8px 0 4px;font-size:11px;color:#6B778C;">KPI-19 ✔ — 1 Modul PSH Berstruktur dibangunkan</div>
+      <div class="prog-wrap"><div class="prog-bar prog-green" style="width:100%"></div></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ========== PAGE 4: TINDAKAN SEGERA ========== -->
+<div id="page-tindakan" class="page">
+<div class="main">
+  <div class="section-title">KPI Memerlukan Tindakan Segera</div>
+
+  <div class="alert alert-red">
+    <div class="alert-icon">🔴</div>
+    <div><strong>KPI-09 — Pendaftaran Pelajar (Norma Ambilan)</strong><br>
+    Pencapaian semasa: <strong>74%</strong> vs Sasaran: <strong>90%</strong> &nbsp;|&nbsp; Jurang: <strong>-16%</strong><br>
+    <em>Cadangan: Tingkatkan strategi promosi, jangkauan komuniti, dan kerjasama dengan sekolah-sekolah berdekatan.</em></div>
+  </div>
+
+  <div class="alert alert-red">
+    <div class="alert-icon">🔴</div>
+    <div><strong>KPI-13 — Pensyarah Kemahiran Industri</strong><br>
+    Pencapaian semasa: <strong>42%</strong> vs Sasaran: <strong>50%</strong> &nbsp;|&nbsp; Jurang: <strong>-8%</strong><br>
+    <em>Cadangan: Rancang sangkutan industri atau daftarkan pensyarah teras bidang untuk pensijilan profesional sebelum 31 Dis 2026.</em></div>
+  </div>
+
+  <div class="alert alert-red">
+    <div class="alert-icon">🔴</div>
+    <div><strong>KPI-16 — Skor Prestasi IOC (Industry on Campus)</strong><br>
+    Pencapaian semasa: <strong>39%</strong> vs Sasaran: <strong>50%</strong> &nbsp;|&nbsp; Jurang: <strong>-11%</strong><br>
+    <em>Cadangan: Semak semula penilaian kendiri IOC, perkukuh elemen Kolaborasi dan Mod Pelaksanaan IOC mengikut Garis Panduan BPPI 2022.</em></div>
+  </div>
+
+  <div class="alert alert-yellow">
+    <div class="alert-icon">🟡</div>
+    <div><strong>KPI-04 — Pelajar Berjaya ke Peringkat Kebangsaan/Antarabangsa</strong><br>
+    Pencapaian semasa: <strong>2</strong> vs Sasaran: <strong>4</strong> &nbsp;|&nbsp; Jurang: <strong>-2 pelajar</strong><br>
+    <em>Cadangan: Daftar dan hantar pelajar ke pertandingan kebangsaan Q4 — kategori kemahiran, inovasi, atau keusahawanan.</em></div>
+  </div>
+
+  <div class="alert alert-yellow">
+    <div class="alert-icon">🟡</div>
+    <div><strong>KPI-05 — Program Pembangunan Pelajar Holistik</strong><br>
+    Pencapaian semasa: <strong>5</strong> vs Sasaran: <strong>6</strong> &nbsp;|&nbsp; Jurang: <strong>-1 program</strong><br>
+    <em>Cadangan: Rancang 1 lagi program dalam kluster Kerohanian, Kepimpinan atau Perpaduan sebelum akhir tahun.</em></div>
+  </div>
+
+  <div class="alert alert-yellow">
+    <div class="alert-icon">🟡</div>
+    <div><strong>KPI-08 — Skor Kualiti Data POLYCC</strong><br>
+    Pencapaian semasa: <strong>91%</strong> vs Sasaran: <strong>95%</strong> &nbsp;|&nbsp; Jurang: <strong>-4%</strong><br>
+    <em>Cadangan: Pastikan kemasukan data CCMS/SPMP dikemas kini sebelum tarikh akhir Q4. Fokus pada Kesempurnaan dan Kekinian data.</em></div>
+  </div>
+
+  <div class="alert alert-green">
+    <div class="alert-icon">🟢</div>
+    <div><strong>Sasaran Minimum Q4 2026</strong><br>
+    Capai sekurang-kurangnya <strong>12 daripada 17 KPI Tercapai (70%)</strong> menjelang penutupan akaun 6 Januari 2027.<br>
+    KPI yang perlu ditingkatkan: KPI-04, KPI-05, KPI-08. &nbsp;|&nbsp; KPI Kritikal: KPI-09, KPI-13, KPI-16.</div>
+  </div>
+</div>
+</div>
+
+<!-- ========== PAGE 5: GARIS MASA ========== -->
+<div id="page-garis" class="page">
+<div class="main">
+  <div class="section-title">Garis Masa Pelaporan KPI POLYCC 2026</div>
+  <div class="box">
+    <ul class="timeline">
+      <li>
+        <div class="tl-dot" style="background:#00C48C;width:14px;height:14px;"></div>
+        <div class="tl-label">
+          <strong>✔ SUKU PERTAMA (Q1) — 1 Jan hingga 29 Mac 2026</strong>
+          <span>Validasi: 30 Mac – 6 April 2026 &nbsp;|&nbsp; Analisis: 7–9 April 2026 &nbsp;|&nbsp; Pelaporan: 14 April 2026</span>
+        </div>
+      </li>
+      <li>
+        <div class="tl-dot" style="background:#00C48C;width:14px;height:14px;"></div>
+        <div class="tl-label">
+          <strong>✔ SUKU KEDUA (Q2) — 10 Apr hingga 21 Jun 2026</strong>
+          <span>Validasi: 22 Jun – 5 Julai 2026 &nbsp;|&nbsp; Analisis: 6–8 Julai 2026 &nbsp;|&nbsp; Pelaporan: 15 Julai 2026</span>
+        </div>
+      </li>
+      <li>
+        <div class="tl-dot" style="background:#FFB800;width:14px;height:14px;"></div>
+        <div class="tl-label">
+          <strong>⚠ SUKU KETIGA (Q3) — 9 Julai hingga 20 Sep 2026 &nbsp;<span style="background:#FFF4E0;color:#FF8B00;padding:2px 8px;border-radius:10px;font-size:10px;">SEMASA</span></strong>
+          <span>Validasi: 21 Sep – 4 Okt 2026 &nbsp;|&nbsp; Analisis: 5–7 Okt 2026 &nbsp;|&nbsp; Pelaporan: 14 Okt 2026</span>
+        </div>
+      </li>
+      <li>
+        <div class="tl-dot" style="background:#e5e7eb;width:14px;height:14px;"></div>
+        <div class="tl-label">
+          <strong style="color:#6B778C;">○ SUKU KEEMPAT (Q4) — 8 Okt hingga 14 Dis 2026</strong>
+          <span>Validasi: 15–27 Dis 2026 &nbsp;|&nbsp; Analisis: 28–30 Dis 2026 &nbsp;|&nbsp; Pelaporan: 6 Jan 2027</span>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <div class="section-title" style="margin-top:28px;">Maklumat Tambahan</div>
+  <div class="two-col-eq">
+    <div class="box">
+      <h3>Sistem Pelaporan Rasmi</h3>
+      <table>
+        <tr><td style="font-weight:600;width:40%;">Sistem</td><td>PERSYST 2.0 (POLYCC Performance System)</td></tr>
+        <tr><td style="font-weight:600;">URL</td><td><a href="https://app.mypolycc.edu.my/persistjppkk" target="_blank" style="color:#2E3192;">app.mypolycc.edu.my/persistjppkk</a></td></tr>
+        <tr><td style="font-weight:600;">Kategori</td><td>Kolej Komuniti Kategori 3</td></tr>
+        <tr><td style="font-weight:600;">KPI Aktif</td><td>17 daripada 19 KPI POLYCC 2026</td></tr>
+        <tr><td style="font-weight:600;">KPI Dikecualikan</td><td>KPI-10 (Politeknik) &amp; KPI-15 (COT Politeknik)</td></tr>
+      </table>
+    </div>
+    <div class="box">
+      <h3>Pegawai Bertanggungjawab (PIC)</h3>
+      <table>
+        <tr><th>Peranan</th><th>KPI</th></tr>
+        <tr><td>Penyelaras KPI (TD)</td><td>Semua 17 KPI</td></tr>
+        <tr><td>Pegawai Pengesanan Graduan</td><td>KPI-01, KPI-02</td></tr>
+        <tr><td>Ketua Unit Keusahawanan</td><td>KPI-03</td></tr>
+        <tr><td>PPIA</td><td>KPI-02, KPI-17</td></tr>
+        <tr><td>PPP (Pembangunan Pelajar)</td><td>KPI-04, KPI-05</td></tr>
+        <tr><td>Unit Jaminan Kualiti</td><td>KPI-06</td></tr>
+        <tr><td>Penolong Akauntan</td><td>KPI-11, KPI-12</td></tr>
+        <tr><td>Pegawai Latihan &amp; Pembangunan Staf</td><td>KPI-13</td></tr>
+        <tr><td>Pegawai e-Pembelajaran</td><td>KPI-14</td></tr>
+        <tr><td>Pengurus IOC</td><td>KPI-16</td></tr>
+        <tr><td>KUPIK</td><td>KPI-18</td></tr>
+        <tr><td>Penyelaras PSH</td><td>KPI-19</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <strong>KOLEJ KOMUNITI SANTUBONG</strong> &nbsp;|&nbsp; Jabatan Pendidikan Politeknik dan Kolej Komuniti (JPPKK) &nbsp;|&nbsp; Kementerian Pendidikan Tinggi<br>
+  Pelan Strategik Politeknik dan Kolej Komuniti (PSPKK) 2018–2025 &nbsp;|&nbsp; Kamus KPI POLYCC 2026 &nbsp;|&nbsp; Sistem PERSYST 2.0<br>
+  <span style="font-size:10px;opacity:0.6;">⚠ Semua data dalam dashboard ini adalah DATA DUMMY untuk tujuan demonstrasi. Kemaskini dengan data sebenar daripada PERSYST 2.0.</span><br><br>
+  <span style="font-size:10px;opacity:0.5;">Made with IBM Bob</span>
+</div>
+
+<script>
+  function showPage(name) {
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav a').forEach(a => a.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    event.target.classList.add('active');
+  }
+
+  function filterKPI(filter, btn) {
+    document.querySelectorAll('.btn-filter').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const rows = document.querySelectorAll('#kpi-table tbody tr');
+    rows.forEach(row => {
+      if (filter === 'semua') { row.style.display = ''; return; }
+      if (filter === 'tercapai' || filter === 'proses' || filter === 'kritikal') {
+        row.style.display = row.dataset.status === filter ? '' : 'none';
+      } else {
+        row.style.display = row.dataset.lap === filter ? '' : 'none';
+      }
+    });
+  }
+</script>
+</body>
+</html>
